@@ -16,8 +16,8 @@ Version="0.6"
 TrackerSource="http://quidsup.net/trackers.txt" 
 TrackerListFile="/etc/dnsmasq.d/trackers.list" 
 TrackerQuickList="/etc/notrack/tracker-quick.list"
-TrackerBlackList="/etc/notrack/blacklist.txt"
-TrackerWhiteList="/etc/notrack/whitelist.txt"
+BlackListFile="/etc/notrack/blacklist.txt"
+WhiteListFile="/etc/notrack/whitelist.txt"
 DomainSource="http://quidsup.net/malicious-domains.txt"
 DomainListFile="/etc/dnsmasq.d/malicious-domains.list"
 DomainBlackList="/etc/notrack/domain-blacklist.txt"
@@ -84,25 +84,24 @@ Read_Config_File() {
 #Check Lists---------------------------------------------------------
 Check_Lists() {  
   #Check if Blacklist exists-----------------------------------------
-  if [ ! -e $TrackerBlackList ]; then
+  if [ ! -e $BlackListFile ]; then
     echo "Creating blacklist"
-    touch $TrackerBlackList
-    echo "#Use this file to add additional websites to be blocked" >> $TrackerBlackList
-    echo "#Run notrack script (sudo notrack) after you make any changes to this file" >> $TrackerBlackList
-    echo "#doubleclick.net" >> $TrackerBlackList
-    echo "#google-analytics.com" >> $TrackerBlackList
-    echo "#googletagmanager.com" >> $TrackerBlackList
-    echo "#googletagservices.com" >> $TrackerBlackList
+    touch $BlackListFile
+    echo "#Use this file to add additional websites to be blocked" >> $BlackListFile
+    echo "#Run notrack script (sudo notrack) after you make any changes to this file" >> $BlackListFile
+    echo "#doubleclick.net" >> $BlackListFile
+    echo "#googletagmanager.com" >> $BlackListFile
+    echo "#googletagservices.com" >> $BlackListFile
   fi
 
   #Check if Whitelist exists-----------------------------------------
-  if [ ! -e $TrackerWhiteList ]; then
+  if [ ! -e $WhiteListFile ]; then
     echo "Creating whitelist"
-    touch $TrackerWhiteList
-    echo "# Use this file to remove files from blocklist" >> $TrackerWhiteList
-    echo "# Run notrack script (sudo notrack) after you make any changes to this file" >> $TrackerWhiteList
-    echo "#doubleclick.net" >> $TrackerWhiteList
-    echo "#google-analytics.com" >> $TrackerWhiteList
+    touch $WhiteListFile
+    echo "# Use this file to remove files from blocklist" >> $WhiteListFile
+    echo "# Run notrack script (sudo notrack) after you make any changes to this file" >> $WhiteListFile
+    echo "#doubleclick.net" >> $WhiteListFile
+    echo "#google-analytics.com" >> $WhiteListFile
   fi
 
 
@@ -203,16 +202,16 @@ GetList_NoTrack() {
   Check_File_Exists "/etc/notrack/trackers.txt"
   
   #Merge Downloaded List with users Blacklist
-  cat /etc/notrack/trackers.txt $TrackerBlackList > /tmp/combined.txt
+  cat /etc/notrack/trackers.txt $BlackListFile > /tmp/combined.txt
 
   #Merge Whitelist with above two lists to remove duplicates
   echo "Processing Tracker List"
   echo "#Tracker Blocklist last updated $(date)" > $TrackerListFile
-  echo "#Don't make any changes to this file, use $TrackerBlackList and $TrackerWhiteList instead" >> $TrackerListFile
+  echo "#Don't make any changes to this file, use $BlackListFile and $WhiteListFile instead" >> $TrackerListFile
   cat /dev/null > $TrackerQuickList              #Empty old List
   
   i=0                                            #Progress dot counter
-  awk 'NR==FNR{A[$1]; next}!($1 in A)' $TrackerWhiteList /tmp/combined.txt | while read -r Line; do
+  awk 'NR==FNR{A[$1]; next}!($1 in A)' $WhiteListFile /tmp/combined.txt | while read -r Line; do
     if [ $i == 100 ]; then                       #Display some progress ..
       echo -n .
       i=0
