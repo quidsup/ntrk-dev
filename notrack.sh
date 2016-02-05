@@ -18,13 +18,13 @@ TrackerListFile="/etc/dnsmasq.d/trackers.list"
 TrackerQuickList="/etc/notrack/tracker-quick.list"
 BlackListFile="/etc/notrack/blacklist.txt"
 WhiteListFile="/etc/notrack/whitelist.txt"
+WhiteListCount=0
 DomainSource="http://quidsup.net/malicious-domains.txt"
 DomainListFile="/etc/dnsmasq.d/malicious-domains.list"
 DomainBlackList="/etc/notrack/domain-blacklist.txt"
 DomainWhiteList="/etc/notrack/domain-whitelist.txt"
 DomainQuickList="/etc/notrack/domain-quick.list"
 ConfigFile="/etc/notrack/notrack.conf"
-
 OldLatestVersion="$Version"
 
 #Error_Exit----------------------------------------------------------
@@ -57,12 +57,30 @@ DeleteOldFile() {
     rm "$1"
   fi
 }
-
+Add Site to List-----------------------------------------------------
+AddSite() {
+  Site="$1"
+  if [[ $WhiteListCount == 0 ]]; then               #No Items in blocklist?
+    echo "address=/$Line/$IPAddr" >> "$2"           #Just add site to tracker list
+    echo "$Line,Active" >> $TrackerQuickList
+  else
+    for WLSite in "${WhiteList[@]}"                 #Loop through White List
+    do
+      if [[ $Site == "$WLSite" ]]; then
+        echo "$Site,Disabled" >> $TrackerQuickList  #Matched, note site is disabled
+        break
+      fi
+    done
+  fi
+  
+  echo "address=/$Line/$IPAddr" >> "$2"
+  echo "$Line,Active" >> $TrackerQuickList  
+}
 #Read Config File----------------------------------------------------
 Read_Config_File() {  
   if [ -e "$ConfigFile" ]; then
     echo "Reading Config File"
-    while IFS='= ' read Key Value
+    while IFS='= ' read -r Key Value
     do
       if [[ ! $Key =~ ^\ *# && -n $Key ]]; then
         Value="${Value%%\#*}"    # Del in line right comments
@@ -81,6 +99,18 @@ Read_Config_File() {
   fi 
 }
 
+#Read White List-----------------------------------------------------
+Read_WhiteList() {
+  while IFS=' ' read -r Line
+  do
+    if [[ ! $Line =~ ^\ *# && -n $Line ]]; then
+      Line="${Line%%\#*}"                        #Delete comments
+      Line="${Line%%*( )}"                       #Delete trailing spaces
+      WhiteList[$WhiteListCount]="$Line"
+      ((WhiteListCount++))
+    fi
+  done < $WhiteListFile
+}
 #Check Lists---------------------------------------------------------
 Check_Lists() {  
   #Check if Blacklist exists-----------------------------------------
@@ -191,7 +221,6 @@ Get_IPAddress() {
 
 #NoTrack BlockList---------------------------------------------------
 GetList_NoTrack() {
-  
   CreateFile "$TrackerListFile"
   CreateFile "$TrackerQuickList"
   
@@ -201,35 +230,35 @@ GetList_NoTrack() {
   echo
   Check_File_Exists "/etc/notrack/trackers.txt"
   
-  #Merge Downloaded List with users Blacklist
-  cat /etc/notrack/trackers.txt $BlackListFile > /tmp/combined.txt
-
-  #Merge Whitelist with above two lists to remove duplicates
-  echo "Processing Tracker List"
+  echo "Processing NoTrack Tracker List"
   echo "#Tracker Blocklist last updated $(date)" > $TrackerListFile
   echo "#Don't make any changes to this file, use $BlackListFile and $WhiteListFile instead" >> $TrackerListFile
   cat /dev/null > $TrackerQuickList              #Empty old List
   
   i=0                                            #Progress dot counter
-  awk 'NR==FNR{A[$1]; next}!($1 in A)' $WhiteListFile /tmp/combined.txt | while read -r Line; do
-    if [ $i == 100 ]; then                       #Display some progress ..
-      echo -n .
-      i=0
-    fi
+  while IFS=' ' read -r Line
+  do
     if [[ ! $Line =~ ^\ *# && -n $Line ]]; then
       Line="${Line%%\#*}"                        #Delete comments
       Line="${Line%%*( )}"                       #Delete trailing spaces
-      echo "address=/$Line/$IPAddr" >> $TrackerListFile
-      echo "$Line" >> $TrackerQuickList    
+      
+      AddSite "$Line" "$TrackerListFile"
+      
+      if [ $i == 100 ]; then                    #Display progress dots
+        echo -n .
+        i=0
+      fi
+      
+      ((i++))
     elif [[ "${Line:0:14}" == "#LatestVersion" ]]; then
       LatestVersion="${Line:15}"                 #Substr version number only
       if [[ $OldLatestVersion != "$LatestVersion" ]]; then
         echo "New version of NoTrack available v$LatestVersion"
         sed -i "s/^\(LatestVersion *= *\).*/\1$LatestVersion/" $ConfigFile      
       fi
-    fi
-    ((i++))
-  done
+    fi  
+  done < /etc/notrack/trackers.txt
+  
 
   echo .                                         #Final dot and carriage return
   echo "Imported $(wc -l $TrackerQuickList | cut -d' ' -f1) Advert Domains into block list"
