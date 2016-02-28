@@ -1,0 +1,86 @@
+<div id="pause">
+<span class="timer">00.00</span>
+<span class="pbutton">&#8545;</span>
+<div tabindex="1" id="pause-menu">&#x25BC;
+    <div id="pause-menu-content">
+        <span><a href="#">5 Mins</a></span>
+        <hr>
+        <span><a href="#">15 Mins</a></span>
+        <hr>
+        <span><a href="#">1 Hour</a></span>
+    </div>
+</div>
+</div>
+
+
+
+#pause {
+  border: 1px solid black;
+  float: right;
+  margin: 1em 10em 0 0;
+  padding: 0.5rem;
+  background-color: #262626;
+  font-size: 1em;
+}
+#pause span.timer {
+  border: inset 2px #888888;
+  background-color: #F1F1F1;
+  padding: 0.2rem 0.3rem;
+  margin-right: 0.2rem;
+}
+#pause span.pbutton {
+  border: outset 2px #303030;
+  background-color: #1f1f1f;
+  padding: 0.1rem 0.5rem;
+  margin-right: 0.2rem;
+  color: #008DC1;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+#pause-menu {
+  position: relative;
+  border: outset 2px #303030;
+  background-color: #1f1f1f;
+  padding: 0.3rem 0.5rem 0.2em;
+  display: inline-block;
+  color: #008DC1;
+}
+#pause-menu:focus {
+    /* clicking on label should toggle the menu */
+    pointer-events: none;
+}
+#pause-menu:focus #pause-menu-content {
+    /*  opacity is 1 in opened state (see below) */
+    opacity: 1;
+    visibility: visible;
+
+    /* don't let pointer-events affect descendant elements */
+    pointer-events: auto;
+}
+#pause-menu-content {
+  position: absolute;
+  z-index: 1;
+  margin: 1em 0 0 -0.8em;
+  
+  /* use opacity to fake immediate toggle */
+  opacity: 0;
+  visibility: hidden;
+  transition: visibility 0.5s;
+  border: 2px solid black;
+  border-radius: 4px;
+  background-color: #262626;
+}
+#pause-menu-content span {
+  width: 7em;  
+  display: block;
+  padding: 0.5em 0 0.5em 1em;
+}
+#pause-menu-content span:hover {
+   background-color: #3B3B3B;
+}
+hr { 
+  width: 80%;
+  margin: 0 auto;
+  border: 0px solid #1D1D1D; 
+  border-top-width: 1px;
+}
