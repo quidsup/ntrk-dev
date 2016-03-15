@@ -2,7 +2,7 @@ function Action_TopMenuGets($NewLoc) {
   //Function to Action GET requests from Top Menu
   //Return value false when no action carried out
   //1. Is _GET['a'] (action) set?
-  //2a. Delete config out of Memcached
+  //2a. Delete config out of Memcached, since its about to be changed by ntrk-pause
   //2b. Execute appropriate action
   //2c. In the case of Restart or Shutdown we want to delay execution of the command for a couple of seconds to finish off any disk writes
   //2d. For any other value of 'a' leave this function and carry on with previous page
