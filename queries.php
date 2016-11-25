@@ -10,9 +10,9 @@ ensure_active_session();
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <link href="./css/master.css" rel="stylesheet" type="text/css" />
-  <link rel="icon" type="image/png" href="./favicon.png" />
+  <meta charset="UTF-8">
+  <link href="./css/master.css" rel="stylesheet" type="text/css">
+  <link rel="icon" type="image/png" href="./favicon.png">
   <script src="./include/menu.js"></script>
   <script src="./include/queries.js"></script>
   <title>NoTrack - DNS Stats</title>
@@ -47,6 +47,7 @@ $COMMONSITESLIST = array('cloudfront.net',
                          'gvt1.com',
                          'deviantart.net',
                          'deviantart.com',
+                         'ampproject.net',
                          'tumblr.com');
 //CommonSites referres to websites that have a lot of subdomains which aren't necessarily relivent. In order to improve user experience we'll replace the subdomain of these sites with "*"
 
@@ -55,7 +56,7 @@ $COMMONSITESLIST = array('cloudfront.net',
 ************************************************/
 $page = 1;
 $filter = DEF_FILTER;
-$view = "livegroup";
+$view = 'livegroup';
 $sort = 'DESC';
 $sys = DEF_SYSTEM;
 
@@ -104,26 +105,32 @@ function add_datestr() {
 function add_filterstr() {
   global $filter, $sys;
   
-  $searchstr = ' WHERE ';
+  $searchstr = " WHERE ";
   
-  if (($filter == DEF_FILTER) && ($sys == DEF_SYSTEM)) return '';
+  if (($filter == DEF_FILTER) && ($sys == DEF_SYSTEM)) {   //Nothing to add
+    return '';
+  }
   
   if ($sys != DEF_SYSTEM) {
-    $searchstr .= 'sys = \''.$sys.'\'';
+    $searchstr .= "sys = '$sys'";
   }
   if ($filter != DEF_FILTER) {
-    if ($sys != DEF_SYSTEM) $searchstr .= ' AND dns_result=';
-    else $searchstr .= ' dns_result=';
+    if ($sys != DEF_SYSTEM) {
+      $searchstr .= " AND dns_result=";
+    }    
+    else {
+      $searchstr .= " dns_result=";
+    }    
     
     switch($filter) {
       case 'allowed':
-        $searchstr .= '\'a\'';
+        $searchstr .= "'a'";
         break;
       case 'blocked':
-        $searchstr .= '\'b\'';
+        $searchstr .= "'b'";
         break;
       case 'local':
-        $searchstr .= '\'l\'';
+        $searchstr .= "'l'";
         break;
     }
   }
@@ -183,17 +190,17 @@ function draw_filterbox() {
   $line = '';
   
   if ($sqltable == 'historic') {
-    $hidden_date_vars = '<input type="hidden" name="datestart" value="'.$datestart.'" /><input type="hidden" name="dateend" value="'.$dateend.'" />'.PHP_EOL;
+    $hidden_date_vars = '<input type="hidden" name="datestart" value="'.$datestart.'"><input type="hidden" name="dateend" value="'.$dateend.'">'.PHP_EOL;
   }
   
   echo '<div class="sys-group">'.PHP_EOL;
   echo '<h5>DNS Queries</h5>'.PHP_EOL;
   echo '<div class="row"><div class="col-half">'.PHP_EOL;
   echo '<form method="get">'.PHP_EOL;
-  echo '<input type="hidden" name="page" value="'.$page.'" />'.PHP_EOL;
-  echo '<input type="hidden" name="view" value="'.$view.'" />'.PHP_EOL;
-  echo '<input type="hidden" name="filter" value="'.$filter.'" />'.PHP_EOL;
-  echo '<input type="hidden" name="sort" value="'.strtolower($sort).'" />'.PHP_EOL;
+  echo '<input type="hidden" name="page" value="'.$page.'">'.PHP_EOL;
+  echo '<input type="hidden" name="view" value="'.$view.'">'.PHP_EOL;
+  echo '<input type="hidden" name="filter" value="'.$filter.'">'.PHP_EOL;
+  echo '<input type="hidden" name="sort" value="'.strtolower($sort).'">'.PHP_EOL;
   echo $hidden_date_vars;
   echo '<span class="filter">System:</span><select name="sys" onchange="submit()">';
     
@@ -212,10 +219,10 @@ function draw_filterbox() {
   
   echo '<div class="col-half">'.PHP_EOL;
   echo '<form method="get">'.PHP_EOL;
-  echo '<input type="hidden" name="page" value="'.$page.'" />'.PHP_EOL;
-  echo '<input type="hidden" name="view" value="'.$view.'" />'.PHP_EOL;
-  echo '<input type="hidden" name="sort" value="'.strtolower($sort).'" />'.PHP_EOL;
-  echo '<input type="hidden" name="sys" value="'.$sys.'" />'.PHP_EOL;
+  echo '<input type="hidden" name="page" value="'.$page.'">'.PHP_EOL;
+  echo '<input type="hidden" name="view" value="'.$view.'">'.PHP_EOL;
+  echo '<input type="hidden" name="sort" value="'.strtolower($sort).'">'.PHP_EOL;
+  echo '<input type="hidden" name="sys" value="'.$sys.'">'.PHP_EOL;
   echo $hidden_date_vars;
   echo '<span class="filter">Filter:</span><select name="filter" onchange="submit()">';
   echo '<option value="'.$filter.'">'.$FILTERLIST[$filter].'</option>'.PHP_EOL;
@@ -228,11 +235,11 @@ function draw_filterbox() {
   if ($sqltable == 'historic') {
     echo '<div class="row">'.PHP_EOL;
     echo '<form method="get">'.PHP_EOL;
-    echo '<input type="hidden" name="page" value="'.$page.'" />'.PHP_EOL;
-    echo '<input type="hidden" name="view" value="'.$view.'" />'.PHP_EOL;
-    echo '<input type="hidden" name="sort" value="'.strtolower($sort).'" />'.PHP_EOL;
-    echo '<input type="hidden" name="filter" value="'.$filter.'" />'.PHP_EOL;
-    echo '<input type="hidden" name="sys" value="'.$sys.'" />'.PHP_EOL;
+    echo '<input type="hidden" name="page" value="'.$page.'">'.PHP_EOL;
+    echo '<input type="hidden" name="view" value="'.$view.'">'.PHP_EOL;
+    echo '<input type="hidden" name="sort" value="'.strtolower($sort).'">'.PHP_EOL;
+    echo '<input type="hidden" name="filter" value="'.$filter.'">'.PHP_EOL;
+    echo '<input type="hidden" name="sys" value="'.$sys.'">'.PHP_EOL;
     echo '<div class="col-half">'.PHP_EOL;
     echo '<span class="filter">Start Date: </span><input name="datestart" type="date" value="'.$datestart.'" onchange="submit()"/>'.PHP_EOL;
     echo '</div>'.PHP_EOL;
@@ -280,36 +287,13 @@ function draw_viewbuttons() {
 
 
 /********************************************************************
- *  Load TLD Block List
- *  
- *  1. Attempt to load TLDBlockList from Memcache
- *  2. If that fails then check if DomainQuickList file exists
- *  3. Read each line into TLDBlockList array and trim off \n
- *  4. Once loaded store TLDBlockList array in Memcache for 30 mins
- *
+ *  Get Block List Name
+ *    Returns the name of block list if it exists in the names array
  *  Params:
- *    None
+ *    $bl - bl_name
  *  Return:
- *    None
+ *    Full block list name
  */
-/*function load_tldblocklist() {
-  global $TLDBlockList, $mem, $DomainQuickList;
-  
-  $TLDBlockList = $mem->get('TLDBlockList');
-  if (empty($TLDBlockList)) {
-    if (file_exists($DomainQuickList)) {          //Check if File Exists
-      $fh = fopen($DomainQuickList, 'r') or die('Error unable to open '.$DomainQuickList);
-      while (!feof($fh)) {
-        $TLDBlockList[] = trim(fgets($fh));
-      }
-      fclose($fh);
-      $mem->set('TLDBlockList', $TLDBlockList, 0, 1800);
-    }
-  }
-  
-  return null;
-}
-*/
 
 function get_blocklistname($bl) {
   global $BLOCKLISTNAMES;
@@ -341,52 +325,26 @@ function search_blockreason($site) {
     return $result->fetch_row()[0];
   }
   
-  /*$split = array();
-  $splitsearch = '';
-  $splitsize = 0;
     
-  $split = explode('.', $site);                  //Split URL by . delimeter
-  $splitsize = count($split);
-  
-  
-  if ($splitsize == 0) {                         //Zero is probably user searching
-    return '<p class="small">Invalid Request</p>';
-  }
-  
-  //Look at each section of URL up to domain.tld
-  for ($i = 1; $i < $splitsize; $i++) {
-    $splitsearch = implode('.', array_slice($split, $i));
-    $result = $db->query('SELECT bl_source site FROM blocklist WHERE site = \''.$splitsearch.'\'');    
-    if ($result->num_rows > 0) {
-      return '<p class="small">Blocked by '.get_blocklistname($result->fetch_row()[0]).'</p>';
-      break;
-    }
-  }
-  */
-  
   //Try to find LIKE site ending with site.tld
-  if (preg_match('/[\w\d\-_]+\.([\w\d\-_]+)$/', $site,  $matches) > 0) {
-    $db->query('SELECT bl_source site FROM blocklist WHERE site LIKE \'%'.$matches[1].'.'.$matches[2].'\'');
+  if (preg_match('/([\w\d\-\_]+)\.([\w\d\-\_]+)$/', $site,  $matches) > 0) {
+    $result = $db->query('SELECT bl_source site FROM blocklist WHERE site LIKE \'%'.$matches[1].'.'.$matches[2].'\'');
+
     if ($result->num_rows > 0) {
       return $result->fetch_row()[0];
     }    
     else {                                      //On fail try for site = .tld
-      $db->query('SELECT bl_source site FROM blocklist WHERE site = \'.'.$matches[2].'\'');
+      $result = $db->query('SELECT bl_source site FROM blocklist WHERE site = \'.'.$matches[2].'\'');
       if ($result->num_rows > 0) {
         return $result->fetch_row()[0];
       }
     }
   }
-  /*
-  //Last attempt to search against Top Level Domain
-  $result = $db->query('SELECT bl_source site FROM blocklist WHERE site = \'.'.$split[$splitsize-1].'\'');
-  if ($result->num_rows > 0) {
-    return '<p class="small">Blocked by Top Level Domain</p>';
-  }
-  */
+  
   return '';                                     //Don't know at this point    
 }
 
+//Need to ammend for historic view TODO
 /********************************************************************
  *  Search Systems
  *  
@@ -403,7 +361,7 @@ function search_systems() {
   $syslist = $mem->get('syslist');
   
   if (empty($syslist)) {
-    if (! $result = $db->query('SELECT DISTINCT `sys` FROM `live` ORDER BY `sys`')) {
+    if (! $result = $db->query("SELECT DISTINCT sys FROM live ORDER BY sys")) {
       die('There was an error running the query'.$db->error);
     }
     while($row = $result->fetch_assoc()) {       //Read each row of results
@@ -435,13 +393,14 @@ function show_group_view() {
   $blockreason = '';
   $query = '';
   
-  $linkstr = htmlspecialchars('&filter='.$filter.'&sys='.$sys);
+  $linkstr = "&amp;filter=$filter&amp;sys=$sys"; //Default link string
+  
   if ($sqltable == 'historic') {                 //Add date search to link in histroic view
-    $linkstr .= htmlspecialchars('&datestart='.$datestart.'&dateend='.$dateend);
+    $linkstr .= "&amp;datestart=$datestart&amp;dateend=$dateend";
   }
   
-  $rows = count_rows_save('SELECT COUNT(DISTINCT `dns_request`) FROM `'.$sqltable.'`' .add_filterstr().add_datestr());
-  $query = 'SELECT sys, dns_request, dns_result, COUNT(*) AS count FROM `'.$sqltable.'`'.add_filterstr().add_datestr().' GROUP BY dns_request ORDER BY count '.$sort.' LIMIT '.ROWSPERPAGE.' OFFSET '.(($page-1) * ROWSPERPAGE);
+  $rows = count_rows_save("SELECT COUNT(DISTINCT dns_request) FROM $sqltable " .add_filterstr().add_datestr());
+  $query = "SELECT sys, dns_request, dns_result, COUNT(*) AS count FROM $sqltable" .add_filterstr().add_datestr()." GROUP BY dns_request ORDER BY count $sort LIMIT ".ROWSPERPAGE." OFFSET ".(($page-1) * ROWSPERPAGE);
   
   if(!$result = $db->query($query)){
     die('There was an error running the query'.$db->error);
@@ -468,14 +427,18 @@ function show_group_view() {
     
     if ($row['dns_result'] == 'A') {             //Row colouring
       $row_class='';
-      $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', false)"></span>';
+      $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', false, true)"></span>';
     }
-    elseif ($row['dns_result'] == 'B') {
+    elseif ($row['dns_result'] == 'B') {         //Blocked
       $row_class = ' class="blocked"';
       $blockreason = search_blockreason($row['dns_request']);
       if ($blockreason == 'bl_notrack') {        //Show Report icon on NoTrack list
-        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', true)"></span>';
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, true)"></span>';
         $blockreason = '<p class="small">Blocked by NoTrack list</p>';
+      }
+      elseif ($blockreason == 'custom') {        //Users blacklist, show report icon
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, true)"></span>';
+        $blockreason = '<p class="small">Blocked by Black list</p>';
       }
       elseif ($blockreason == '') {              //No reason is probably IP or Search request
         $row_class = ' class="invalid"';
@@ -483,21 +446,8 @@ function show_group_view() {
       }
       else {
         $blockreason = '<p class="small">Blocked by '.get_blocklistname($blockreason).'</p>';
-      }
-      /*if (preg_match('/([\w\d\-_]+)$/', $row['dns_request'],  $matches) > 0) {        
-        if (in_array('.'.$matches[1], $TLDBlockList)) {
-          $blockreason = '<p class="small">.'.$matches[1].' Blocked by Top Level Domain List</p>';          
-        }
-        else {
-          $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', true)"></span>';
-        }
-      }
-      
-      elseif (!filter_var($row['dns_request'], FILTER_VALIDATE_IP) === false) {
-        $row_class = ' class="invalid"';
-        $blockreason = '<p class="small">IP Requested</p>';
-      }
-      */
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, false)"></span>';
+      }      
     }
     elseif ($row['dns_result'] == 'L') {
       $row_class = ' class="local"';
@@ -510,6 +460,9 @@ function show_group_view() {
   }
   
   echo '</table>'.PHP_EOL;
+  echo '<br>'.PHP_EOL;
+  pagination($rows, 'view='.$view.'&amp;sort='.strtolower($sort).$linkstr);
+  
   echo '</div>'.PHP_EOL;
   $result->free();
 
@@ -525,7 +478,7 @@ function show_group_view() {
  *  Return:
  *    false when nothing found, true on success
  */
-function show_live_time() {
+/*function show_live_time() {
   global $db, $page, $sort, $filter, $sys, $view, $Config, $TLDBlockList;
   
   $rows = 0;
@@ -536,7 +489,7 @@ function show_live_time() {
   $rows = count_rows_save('SELECT COUNT(*) FROM live'.add_filterstr());
   if ((($page-1) * ROWSPERPAGE) > $rows) $page = 1;
     
-  $query = 'SELECT * FROM live'.add_filterstr(). ' ORDER BY log_time '.$sort.' LIMIT '.ROWSPERPAGE.' OFFSET '.(($page-1) * ROWSPERPAGE);
+  $query = "SELECT * FROM live".add_filterstr(). " ORDER BY UNIX_TIMESTAMP(log_time) $sort LIMIT ".ROWSPERPAGE." OFFSET ".(($page-1) * ROWSPERPAGE);
   
   if(!$result = $db->query($query)){
     die('There was an error running the query'.$db->error);
@@ -556,16 +509,20 @@ function show_live_time() {
   
   while($row = $result->fetch_assoc()) {         //Read each row of results
     $action = '<a target="_blank" href="'.$Config['SearchUrl'].$row['dns_request'].'"><img class="icon" src="./images/search_icon.png" alt="G" title="Search"></a>&nbsp;<a target="_blank" href="'.$Config['WhoIsUrl'].$row['dns_request'].'"><img class="icon" src="./images/whois_icon.png" alt="W" title="Whois"></a>&nbsp;';
-    if ($row['dns_result'] == 'A') {
+    if ($row['dns_result'] == 'A') {             //Allowed
       $row_class='';
-      $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', false)"></span>';
+      $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', false, true)"></span>';
     }
-    elseif ($row['dns_result'] == 'B') {
+    elseif ($row['dns_result'] == 'B') {         //Blocked
       $row_class = ' class="blocked"';
       $blockreason = search_blockreason($row['dns_request']);
       if ($blockreason == 'bl_notrack') {        //Show Report icon on NoTrack list
-        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', true)"></span>';
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, true)"></span>';
         $blockreason = '<p class="small">Blocked by NoTrack list</p>';
+      }
+      elseif ($blockreason == 'custom') {        //Users blacklist, show report icon
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, true)"></span>';
+        $blockreason = '<p class="small">Blocked by Black list</p>';
       }
       elseif ($blockreason == '') {              //No reason is probably IP or Search request
         $row_class = ' class="invalid"';
@@ -573,21 +530,10 @@ function show_live_time() {
       }
       else {
         $blockreason = '<p class="small">Blocked by '.get_blocklistname($blockreason).'</p>';
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, false)"></span>';
       }
-      /*if (preg_match('/([\w\d\-_]+)$/', $row['dns_request'],  $matches) > 0) {
-        if (in_array('.'.$matches[1], $TLDBlockList)) {
-          $blockreason = '<p class="small">.'.$matches[1].' Blocked by Top Level Domain List</p>';          
-        }
-        else {
-          $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', true)"></span>';
-        }
-      }
-      elseif (!filter_var($row['dns_request'], FILTER_VALIDATE_IP) === false) {
-        $row_class = ' class="invalid"';
-        $blockreason = '<p class="small">IP Requested</p>';
-      } */       
     }
-    elseif ($row['dns_result'] == 'L') {
+    elseif ($row['dns_result'] == 'L') {         //Local
       $row_class = ' class="local"';
       $action = '&nbsp;';
     }
@@ -597,6 +543,8 @@ function show_live_time() {
   }
   
   echo '</table>'.PHP_EOL;
+  echo '<br>'.PHP_EOL;
+  pagination($rows, 'view='.$view.'&amp;sort='.strtolower($sort).'&amp;filter='.$filter.'&amp;sys='.$sys);
   echo '</div>'.PHP_EOL;
   $result->free();
 
@@ -604,40 +552,54 @@ function show_live_time() {
 }
 
 /********************************************************************
- *  Show Historic Time
- *    Show results from Historic table in Time order
+ *  Show Time View
+ *    Show results in Time order
  *
  *  Params:
  *    None
  *  Return:
  *    false when nothing found, true on success
  */
-function show_historic_time() {
+function show_time_view() {
   global $db, $page, $sort, $filter, $sys, $view, $datestart, $dateend, $Config, $TLDBlockList;
   global $datestart, $dateend;
   
   $rows = 0;
   $row_class = '';
+  $pagination_link = '';
+  $query = '';
   $action = '';
-  $blockreason = '';  
-    
-  $rows = count_rows_save('SELECT COUNT(*) FROM historic'.add_filterstr().add_datestr());
-  if ((($page-1) * ROWSPERPAGE) > $rows) $page = 1;
-    
-  $query = 'SELECT * FROM historic'.add_filterstr().add_datestr(). ' ORDER BY log_time '.$sort.' LIMIT '.ROWSPERPAGE.' OFFSET '.(($page-1) * ROWSPERPAGE);
+  $blockreason = '';
+  
+  if ($view == 'livetime') {
+    $rows = count_rows_save('SELECT COUNT(*) FROM live'.add_filterstr());
+    if ((($page-1) * ROWSPERPAGE) > $rows) {
+      $page = 1;    
+    }
+    $query = "SELECT * FROM live".add_filterstr(). " ORDER BY UNIX_TIMESTAMP(log_time) $sort DATE_FORMAT(log_time, '%H:%i:%s') AS formatted_time LIMIT ".ROWSPERPAGE." OFFSET ".(($page-1) * ROWSPERPAGE);
+    $pagination_link = "view=$view&amp;sort=".strtolower($sort)."&amp;filter=$filter&amp;sys=$sys";
+  }
+  else {    
+    $rows = count_rows_save("SELECT COUNT(*) FROM historic".add_filterstr().add_datestr());
+    if ((($page-1) * ROWSPERPAGE) > $rows) {
+      $page = 1;
+    }
+    $query = "SELECT * FROM historic".add_filterstr().add_datestr(). " ORDER BY UNIX_TIMESTAMP(log_time) $sort DATE_FORMAT(log_time, '%Y-%m-%d %H:%i:%s') AS formatted_time LIMIT ".ROWSPERPAGE." OFFSET ".(($page-1) * ROWSPERPAGE);
+    $pagination_link = "view=$view&amp;sort=".strtolower($sort)."&amp;filter=$filter&amp;sys=$sys&amp;datestart=$datestart&amp;dateend=$dateend";
+  }
   
   if(!$result = $db->query($query)){
     die('There was an error running the query'.$db->error);
   }
   
-  if ($result->num_rows == 0) {                 //Leave if nothing found
+  if ($result->num_rows == 0) {                  //Leave if nothing found
     $result->free();
     echo "Nothing found for the selected dates";
     return false;
   }
   
   echo '<div class="sys-group">'.PHP_EOL;
-  pagination($rows, htmlspecialchars('view='.$view.'&sort='.strtolower($sort).'&filter='.$filter.'&sys='.$sys.'&datestart='.$datestart.'&dateend='.$dateend));
+  pagination($rows, $pagination_link);
   draw_viewbuttons();
   
   echo '<table id="query-time-table">'.PHP_EOL;
@@ -645,17 +607,20 @@ function show_historic_time() {
   
   while($row = $result->fetch_assoc()) {         //Read each row of results
     $action = '<a target="_blank" href="'.$Config['SearchUrl'].$row['dns_request'].'"><img class="icon" src="./images/search_icon.png" alt="G" title="Search"></a>&nbsp;<a target="_blank" href="'.$Config['WhoIsUrl'].$row['dns_request'].'"><img class="icon" src="./images/whois_icon.png" alt="W" title="Whois"></a>&nbsp;';
-    if ($row['dns_result'] == 'A') {
+    if ($row['dns_result'] == 'A') {             //Allowed
       $row_class='';
-      $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', false)"></span>';
+      $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', false, true)"></span>';
     }
-    elseif ($row['dns_result'] == 'B') {
-      $row_class = ' class="blocked"';
-      //$action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', true)"></span>';
-      $blockreason = search_blockreason($row['dns_request']);
+    elseif ($row['dns_result'] == 'B') {         //Blocked
+      $row_class = ' class="blocked"';      
+      $blockreason = search_blockreason($row['dns_request']);      
       if ($blockreason == 'bl_notrack') {        //Show Report icon on NoTrack list
-        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="ReportSite(\''.$row['dns_request'].'\', true)"></span>';
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, true)"></span>';
         $blockreason = '<p class="small">Blocked by NoTrack list</p>';
+      }
+      elseif ($blockreason == 'custom') {        //Users blacklist, show report icon
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, true)"></span>';
+        $blockreason = '<p class="small">Blocked by Black list</p>';
       }
       elseif ($blockreason == '') {              //No reason is probably IP or Search request
         $row_class = ' class="invalid"';
@@ -663,21 +628,24 @@ function show_historic_time() {
       }
       else {
         $blockreason = '<p class="small">Blocked by '.get_blocklistname($blockreason).'</p>';
-      }
+        $action .= '<span class="pointer"><img src="./images/report_icon.png" alt="Rep" title="Report Site" onclick="reportSite(\''.$row['dns_request'].'\', true, false)"></span>';
+      }    
     }
-    elseif ($row['dns_result'] == 'L') {
+    elseif ($row['dns_result'] == 'L') {         //Local
       $row_class = ' class="local"';
       $action = '&nbsp;';
     }
     
-    echo '<tr'.$row_class.'><td>'.$row['log_time'].'</td><td>'.$row['sys'].'</td><td>'.$row['dns_request'].$blockreason.'</td><td>'.$action.'</td></tr>'.PHP_EOL;
+    echo '<tr'.$row_class.'><td>'.$row['formatted_time'].'</td><td>'.$row['sys'].'</td><td>'.$row['dns_request'].$blockreason.'</td><td>'.$action.'</td></tr>'.PHP_EOL;
     $blockreason = '';
   }
   
   echo '</table>'.PHP_EOL;
+  echo '<br>'.PHP_EOL;
+  pagination($rows,  $pagination_link);
   echo '</div>'.PHP_EOL;
+  
   $result->free();
-
   return true;
 }
 
@@ -709,10 +677,10 @@ if (isset($_GET['view'])) {
 }
 
 if (isset($_GET['datestart'])) {                 //Filter for yyyy-mm-dd
-  if (preg_match('/^20[0-9][0-9]\-[0-1][0-9]\-[0-3][0-9]$/', $_GET['datestart']) > 0) $datestart = $_GET['datestart'];
+  if (preg_match('/^2[0-1][0-9][0-9]\-[0-1][0-9]\-[0-3][0-9]$/', $_GET['datestart']) > 0) $datestart = $_GET['datestart'];
 }
 if (isset($_GET['dateend'])) {                   //Filter for yyyy-mm-dd
-  if (preg_match('/^20[0-9][0-9]\-[0-1][0-9]\-[0-3][0-9]$/', $_GET['dateend']) > 0) $dateend = $_GET['dateend'];  
+  if (preg_match('/^2[0-1][0-9][0-9]\-[0-1][0-9]\-[0-3][0-9]$/', $_GET['dateend']) > 0) $dateend = $_GET['dateend'];  
 }
 
 if ($sqltable == 'historic') {                   //Check to see if dates are valid
@@ -723,20 +691,17 @@ if ($sqltable == 'historic') {                   //Check to see if dates are val
   }
 }
 
-/*if ($Config['bl_tld'] == 1) {                    //Load TLD Blocklist if being used
-  load_tldblocklist();
-}*/
 
 draw_filterbox();                                //Draw filters
 
 if ($view == 'livetime') {
-  show_live_time();
+  show_time_view();
 }
 elseif ($view == 'livegroup') {
   show_group_view();
 }
 elseif ($view == 'historictime') {
-  show_historic_time();
+  show_time();
 }
 elseif ($view == 'historicgroup') {
   show_group_view();
@@ -761,7 +726,7 @@ $db->close();
 <span id="statsreport"><input type="submit" class="button-blue" value="Report"></span>
 <!--<span id="statsreport"><a class="button-blue" href="#">Report</a></span>-->
 </form>
-<br />
+<br>
 <div class="centered"><h6 class="button-grey" onclick="HideStatsBox()">Cancel</h6></div>
 <div class="close-button" onclick="HideStatsBox()"><img src="./svg/button_close.svg" onmouseover="this.src='./svg/button_close_over.svg'" onmouseout="this.src='./svg/button_close.svg'" alt="close"></div>
 </div>
